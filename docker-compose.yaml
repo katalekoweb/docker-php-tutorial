@@ -6,11 +6,37 @@ services:
       - "80:80"
     volumes:
       - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
-  app: 
+  # php
+  app:
     build:
       dockerfile: ./php/Dockerfile
     volumes:
       - ./app:/app
-  # php
   # mysql
+  db:
+    image: mysql:8.0
+    volumes:
+      - mysqldata:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+      MYSQL_DATABASE: docker-php
+  # phpmyadmin
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: secret
+      UPLOAD_LIMIT: 300M
+    ports:
+      - 127.0.0.1:8080:80
+    links:
+      - db:db
   # redis
+volumes:
+  mysqldata:
