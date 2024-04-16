@@ -1,5 +1,3 @@
-<?php ?>
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -76,7 +74,7 @@
         <div class="col-lg-6 mx-auto">
             <?php if ($_SERVER['REQUEST_METHOD'] === 'POST'): ?>
                 <p class="fs-5 mb-4"><?php echo 'Your translation goes here'; ?></p>
-                <a href="/">Translate another</a>
+                <a href="/">Translate another</a>cli_set_process_title
             <?php else: ?>
 
                 <p class="fs-5 mb-4">Select a language and enter your word(s).</p>
