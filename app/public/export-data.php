@@ -1,15 +1,9 @@
 <?php
 ini_set('memory_limit', '-1'); 
 
+include "database.php";
+
 $json_data = [];
-
-// database connection
-// $conn = mysqli_connect("db", "user", "secret", "docker-php");
-$conn = new mysqli("db", "user", "secret", "docker-php");
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 // @ STATES SECTION
 $states = $conn->query("SELECT * FROM states ORDER BY id ASC");
@@ -22,7 +16,7 @@ if ($states->num_rows > 0) {
 $json_data["states"] = $states_data;
 
 // @ CITIES SECTION
-$cities = $conn->query("SELECT * FROM cities ORDER BY id ASC");
+$cities = $conn->query("SELECT cities.*, states.uuid as state_uuid FROM cities LEFT JOIN states ON states.id = cities.estado ORDER BY id ASC");
 $cities_data = [];
 if ($cities->num_rows > 0) {
     while ($row = $cities->fetch_assoc()) {
@@ -32,7 +26,12 @@ if ($cities->num_rows > 0) {
 $json_data["cities"] = $cities_data;
 
 // @ USERS SECTION
-$users = $conn->query("SELECT * FROM users ORDER BY id ASC");
+$users = $conn->query("
+    SELECT users.*, 
+    sectors.uuid as sector_uuid FROM users 
+    LEFT JOIN sectors 
+    ON sectors.id = users.sector ORDER BY id ASC
+");
 $users_data = [];
 if ($users->num_rows > 0) {
     while ($row = $users->fetch_assoc()) {
@@ -63,7 +62,12 @@ if ($equipments->num_rows > 0) {
 $json_data["equipments"] = $equipments_data;
 
 // @ CUSTOMERS SECTION
-$customers = $conn->query("SELECT * FROM customers ORDER BY id ASC");
+$customers = $conn->query("
+    SELECT customers.*, users.uuid as user_uuid FROM customers  
+    LEFT JOIN users 
+    ON users.id = customers.user_id
+    ORDER BY id ASC"
+);
 $customers_data = [];
 if ($customers->num_rows > 0) {
     while ($row = $customers->fetch_assoc()) {
@@ -83,7 +87,12 @@ if ($servers->num_rows > 0) {
 $json_data["servers"] = $servers_data;
 
 // @ POOLS SECTION
-$pools = $conn->query("SELECT * FROM pools ORDER BY id ASC");
+$pools = $conn->query("
+    SELECT pools.*, servidors.uuid as server_uuid FROM pools 
+    JOIN servidors ON servidors.id = pools.servidor_id 
+    ORDER BY id ASC
+
+");
 $pools_data = [];
 if ($pools->num_rows > 0) {
     while ($row = $pools->fetch_assoc()) {
@@ -93,7 +102,7 @@ if ($pools->num_rows > 0) {
 $json_data["pools"] = $pools_data;
 
 // @ INTERFACES SECTION
-$interfaces = $conn->query("SELECT * FROM interfaces ORDER BY id ASC");
+$interfaces = $conn->query("SELECT interfaces.*, servidors.uuid as server_uuid FROM interfaces JOIN servidors ON servidors.id = interfaces.servidor_id  ORDER BY id ASC");
 $interfaces_data = [];
 if ($interfaces->num_rows > 0) {
     while ($row = $interfaces->fetch_assoc()) {
@@ -103,7 +112,7 @@ if ($interfaces->num_rows > 0) {
 $json_data["interfaces"] = $interfaces_data;
 
 // @ IP CLASSES SECTION
-$ipclasses = $conn->query("SELECT * FROM ipclasses ORDER BY id ASC");
+$ipclasses = $conn->query("SELECT ipclasses.*, servidors.uuid as server_uuid FROM ipclasses JOIN servidors ON servidors.id = ipclasses.servidor_id  ORDER BY id ASC");
 $ipclasses_data = [];
 if ($ipclasses->num_rows > 0) {
     while ($row = $ipclasses->fetch_assoc()) {
@@ -113,7 +122,12 @@ if ($ipclasses->num_rows > 0) {
 $json_data["ipclasses"] = $ipclasses_data;
 
 // @ PACKAGES SECTION
-$planos = $conn->query("SELECT * FROM planos ORDER BY id ASC");
+$planos = $conn->query("
+    SELECT planos.*, servidors.uuid as server_uuid, pools.uuid as pool_uuid FROM planos 
+    LEFT JOIN servidors ON servidors.id = planos.servidor_id 
+    LEFT JOIN pools ON pools.id = planos.pool_id 
+    ORDER BY id ASC
+");
 $planos_data = [];
 if ($planos->num_rows > 0) {
     while ($row = $planos->fetch_assoc()) {
@@ -123,7 +137,18 @@ if ($planos->num_rows > 0) {
 $json_data["packages"] = $planos_data;
 
 // @ SUBSCRIPTION SECTION
-$assinaturas = $conn->query("SELECT * FROM assinaturas ORDER BY id ASC");
+$assinaturas = $conn->query("
+    SELECT assinaturas.*, users.uuid as client_uuid,
+    pa.uuid as parent_uuid, 
+    planos.uuid as package_uuid, 
+    interfaces.uuid as interface_uuid 
+    FROM assinaturas 
+    LEFT JOIN users ON users.id = assinaturas.user_id  
+    LEFT JOIN assinaturas as pa ON pa.id = assinaturas.assinatura_referente_id
+    LEFT JOIN planos ON planos.id = assinaturas.plano_id 
+    LEFT JOIN interfaces ON interfaces.id = assinaturas.interface 
+    ORDER BY assinaturas.id ASC
+");
 $assinaturas_data = [];
 if ($assinaturas->num_rows > 0) {
     while ($row = $assinaturas->fetch_assoc()) {
@@ -133,7 +158,15 @@ if ($assinaturas->num_rows > 0) {
 $json_data["subscriptions"] = $assinaturas_data;
 
 // @ EQUIPEMENT SUBSCRIPTION SECTION
-$equipamento_por_assinaturas = $conn->query("SELECT * FROM equipamento_por_assinaturas ORDER BY id ASC");
+$equipamento_por_assinaturas = $conn->query("
+    SELECT equipamento_por_assinaturas.*, 
+    assinaturas.uuid as subscription_uuid, 
+    equipamentos.uuid as equipment_uuid 
+    FROM equipamento_por_assinaturas 
+    LEFT JOIN equipamentos ON equipamentos.id = equipamento_por_assinaturas.equipamento_id 
+    LEFT JOIN assinaturas ON assinaturas.id = equipamento_por_assinaturas.assinatura_id 
+    ORDER BY equipamento_por_assinaturas.id ASC
+");
 $equipamento_por_assinaturas_data = [];
 if ($equipamento_por_assinaturas->num_rows > 0) {
     while ($row = $equipamento_por_assinaturas->fetch_assoc()) {
@@ -144,7 +177,17 @@ $json_data["equipment_per_subscriptions"] = $equipamento_por_assinaturas_data;
 
 
 // @ SIMPLE INVOICE SECTION
-$invoices = $conn->query("SELECT * FROM carnes ORDER BY id ASC");
+$invoices = $conn->query("
+    SELECT carnes.*, 
+    users.uuid as client_uuid,
+    assinaturas.uuid as subscruiption_uuid, 
+    planos.uuid as package_uuid 
+    FROM carnes 
+    LEFT JOIN users ON users.id = carnes.user_id  
+    LEFT JOIN assinaturas ON assinaturas.id = carnes.assinatura_id
+    LEFT JOIN planos ON planos.id = carnes.plano_id 
+    ORDER BY id ASC
+");
 $invoices_data = [];
 if ($invoices->num_rows > 0) {
     while ($row = $invoices->fetch_assoc()) {
@@ -154,7 +197,15 @@ if ($invoices->num_rows > 0) {
 $json_data["invoices"] = $invoices_data;
 
 // @ SIMPLE GERENCIA INVOICE SECTION
-$gerencia_invoices = $conn->query("SELECT * FROM carne_gerencia ORDER BY id ASC");
+$gerencia_invoices = $conn->query("
+    SELECT carne_gerencia.*, 
+    users.uuid as client_uuid,
+    assinaturas.uuid as subscruiption_uuid 
+    FROM carne_gerencia 
+    LEFT JOIN users ON users.id = carne_gerencia.user_id  
+    LEFT JOIN assinaturas ON assinaturas.id = carne_gerencia.assinatura_id
+    ORDER BY id ASC
+");
 $gerencia_invoices_data = [];
 if ($gerencia_invoices->num_rows > 0) {
     while ($row = $gerencia_invoices->fetch_assoc()) {
@@ -164,7 +215,20 @@ if ($gerencia_invoices->num_rows > 0) {
 $json_data["gerencia_invoices"] = $gerencia_invoices_data;
 
 // @ TICKET SECTION
-$chamados = $conn->query("SELECT * FROM chamados ORDER BY id ASC");
+$chamados = $conn->query("
+    SELECT chamados.*, users.uuid as user_uuid,
+    employees.uuid as employee_uuid,
+    assinaturas.uuid as subscruiption_uuid,
+    assinaturas.uuid as subscruiption_uuid,
+    chamado_cats.uuid as cat_uuid
+    FROM chamados 
+    LEFT JOIN users ON users.id = chamados.user_id
+    LEFT JOIN users as employees ON employees.id = chamados.employer_id
+    LEFT JOIN sectors ON sectors.id = chamados.sector_id
+    LEFT JOIN assinaturas ON assinaturas.id = chamados.assinatura_id
+    LEFT JOIN chamado_cats ON chamado_cats.id = chamados.chamado_cat_id
+    ORDER BY id ASC
+");
 $chamados_data = [];
 if ($chamados->num_rows > 0) {
     while ($row = $chamados->fetch_assoc()) {
@@ -193,7 +257,17 @@ if ($finances_category->num_rows > 0) {
 }
 $json_data["finances_category"] = $finances_category_data;
 
-$finances = $conn->query("SELECT * FROM lc_movimento ORDER BY id ASC");
+$finances = $conn->query("
+    SELECT lc_movimento.*, 
+    employees.uuid as employee_uuid,
+    lc_cat.uuid as category_uuid,
+    assinaturas.uuid as subscruiption_uuid
+    FROM lc_movimento 
+    LEFT JOIN users as employees ON employees.id = lc_movimento.employer_id
+    LEFT JOIN lc_cat ON lc_cat.id = lc_movimento.cat
+    LEFT JOIN assinaturas ON assinaturas.id = lc_movimento.assinatura_id
+    ORDER BY id ASC
+");
 $cities_data = [];
 if ($finances->num_rows > 0) {
     while ($row = $finances->fetch_assoc()) {
