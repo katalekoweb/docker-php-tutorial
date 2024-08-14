@@ -8,4 +8,5 @@ An image must exist in order for docker to know whta to build and how to build i
 docker build -t juliaokataleko:php81 -f php/Dockerfile .
 
 ## Open Docker Shell
+in app container
 docker exec -it [container-name - docker-php-tutorial-web-1] sh
