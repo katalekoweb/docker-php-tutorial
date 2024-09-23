@@ -9,4 +9,4 @@ docker build -t juliaokataleko:php81 -f php/Dockerfile .
 
 ## Open Docker Shell
 in app container
-docker exec -it [container-name - docker-php-tutorial-web-1] sh
+docker exec -it [container-name - docker-php-mysql-phpmyadmin-app-1] sh
