@@ -12,24 +12,31 @@ include "update-all-null-uuid.php";
 $json_data = [];
 
 // @ STATES SECTION
-$states = $conn->query("SELECT * FROM states ORDER BY id ASC");
-$states_data = [];
-if ($states->num_rows > 0) {
-    while ($row = $states->fetch_assoc()) {
-        $states_data[] = $row;
-    }
-}
-$json_data["states"] = $states_data;
+// $states = $conn->query("SELECT * FROM states ORDER BY id ASC");
+// $states_data = [];
+// if ($states->num_rows > 0) {
+//     while ($row = $states->fetch_assoc()) {
+//         $states_data[] = $row;
+//     }
+// }
+// $json_data["states"] = $states_data;
 
-// @ CITIES SECTION
-$cities = $conn->query("SELECT cities.*, states.uuid as state_uuid FROM cities LEFT JOIN states ON states.id = cities.estado ORDER BY id ASC");
-$cities_data = [];
-if ($cities->num_rows > 0) {
-    while ($row = $cities->fetch_assoc()) {
-        $cities_data[] = $row;
-    }
-}
-$json_data["cities"] = $cities_data;
+// // @ CITIES SECTION
+// $cities = $conn->query("SELECT cities.*, states.uuid as state_uuid FROM cities LEFT JOIN states ON states.id = cities.estado ORDER BY id ASC");
+// $cities_data = [];
+// if ($cities->num_rows > 0) {
+//     while ($row = $cities->fetch_assoc()) {
+//         $cities_data[] = $row;
+//     }
+// }
+// $json_data["cities"] = $cities_data;
+
+// // just states ands cities
+// $jsonString = json_encode($json_data, JSON_PRETTY_PRINT);
+// $path = 'data/json_data-'. date('d-m-Y-H-i-s') .'.json';
+// file_put_contents($path, $jsonString);
+// echo "Ficheiro Json Salvo: " . $path;
+// exit();
 
 // @ SECTORS SECTION
 $sectors = $conn->query("SELECT * FROM sectors ORDER BY id ASC");

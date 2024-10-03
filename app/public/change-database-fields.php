@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +11,7 @@
         }
     </style>
 </head>
-<body>
+<body> -->
 
 <?php
 
@@ -19,17 +19,17 @@ include "database.php";
 
 // add uuid field into database
 
-try {
-    mysqli_query($conn, "ALTER table states ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
-} catch (\Throwable $th) {
-    echo "Coluna ja existe na tabela estados...<hr/>";
-}
+// try {
+//     mysqli_query($conn, "ALTER table states ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
+// } catch (\Throwable $th) {
+//     echo "Coluna ja existe na tabela estados...<hr/>";
+// }
 
-try {
-    mysqli_query($conn, "ALTER table cities ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
-} catch (\Throwable $th) {
-    echo "Coluna ja existe na tabela cidades...<hr/>";
-}
+// try {
+//     mysqli_query($conn, "ALTER table cities ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
+// } catch (\Throwable $th) {
+//     echo "Coluna ja existe na tabela cidades...<hr/>";
+// }
 
 try {
     mysqli_query($conn, "ALTER table users ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
@@ -138,11 +138,9 @@ echo "<h1>Coluna UUID adicionada em todas as tabelas.</h1>";
 
 ?>
 
-
-
     
-</body>
-</html>
+<!-- </body>
+</html> -->
 
 
 

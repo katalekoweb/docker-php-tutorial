@@ -7,18 +7,32 @@ include "database.php";
 // add uuid field into database
 
 $tables = [
-    "states", "cities", 
-    // "users", "sectors", "equipamentos", "customers", 
-    // "servidors", "pools", "interfaces", "ipclasses", "planos", "assinaturas",
-    // "equipamento_por_assinaturas", "carnes", "carne_gerencia", "chamado_cats", "chamados",
-    // "lc_cat", "lc_movimento"
+    // "states", "cities", 
+    "users",
+    "sectors",
+    "equipamentos",
+    "customers",
+    "servidors",
+    "pools",
+    "interfaces",
+    "ipclasses",
+    "planos",
+    "assinaturas",
+    "equipamento_por_assinaturas",
+    "carnes",
+    "carne_gerencia",
+    "chamado_cats",
+    "chamados",
+    "lc_cat",
+    "lc_movimento"
 ];
 
 foreach ($tables as $key => $table) {
     updateUuids($table, $conn);
 }
 
-function updateUuids ($tableName, $conn) {
+function updateUuids($tableName, $conn)
+{
     $table_data = $conn->query("SELECT * FROM $tableName WHERE uuid IS NULL ORDER BY id ASC");
     $states_data = [];
 
