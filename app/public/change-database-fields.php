@@ -1,35 +1,20 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adiciona coluna UUID nas tabelas a serem exportadas</title>
-
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-    </style>
-</head>
-<body> -->
-
 <?php
 
 include "database.php";
 
 // add uuid field into database
 
-// try {
-//     mysqli_query($conn, "ALTER table states ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
-// } catch (\Throwable $th) {
-//     echo "Coluna ja existe na tabela estados...<hr/>";
-// }
+try {
+    mysqli_query($conn, "ALTER table states ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
+} catch (\Throwable $th) {
+    echo "Coluna ja existe na tabela estados...<hr/>";
+}
 
-// try {
-//     mysqli_query($conn, "ALTER table cities ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
-// } catch (\Throwable $th) {
-//     echo "Coluna ja existe na tabela cidades...<hr/>";
-// }
+try {
+    mysqli_query($conn, "ALTER table cities ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
+} catch (\Throwable $th) {
+    echo "Coluna ja existe na tabela cidades...<hr/>";
+}
 
 try {
     mysqli_query($conn, "ALTER table users ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
@@ -131,21 +116,9 @@ try {
 try {
     mysqli_query($conn, "ALTER table lc_movimento ADD COLUMN uuid VARCHAR(50) NULL AFTER id");
 } catch (\Throwable $th) {
-    echo "Coluna ja existe na tabela de movimentos financeiros...<hr/>";
+    echo "Coluna ja existe na tabela de movimentos financeiros...";
 }
 
-echo "<h1>Coluna UUID adicionada em todas as tabelas.</h1>";
+echo "Coluna UUID adicionada em todas as tabelas.";
 
 ?>
-
-    
-<!-- </body>
-</html> -->
-
-
-
-
-
-
-
-

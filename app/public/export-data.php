@@ -111,7 +111,6 @@ $pools = $conn->query("
     SELECT pools.*, servidors.uuid as server_uuid FROM pools 
     JOIN servidors ON servidors.id = pools.servidor_id 
     ORDER BY id ASC
-
 ");
 $pools_data = [];
 if ($pools->num_rows > 0) {
